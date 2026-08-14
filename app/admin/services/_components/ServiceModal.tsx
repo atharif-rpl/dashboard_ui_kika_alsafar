@@ -90,8 +90,8 @@ export default function ServiceModal({ isOpen, onClose, onSuccess, initialData }
         ?.split('=')[1];
 
       const url = initialData 
-        ? `${process.env.NEXT_PUBLIC_API_URL}/services/${initialData.id}` 
-        : `${process.env.NEXT_PUBLIC_API_URL}/services`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/services/${initialData.id}` 
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/services`;
         
       const method = initialData ? "PUT" : "POST";
 

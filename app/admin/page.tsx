@@ -71,11 +71,11 @@ export default function DashboardHome() {
 
         // Tembak semua API secara paralel biar cepat
         const [resPkg, resSrv, resGal, resPart, resSld] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages`, { headers }).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { headers }).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries`, { headers }).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners`, { headers }).catch(() => null),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/sliders`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/services`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners`, { headers }).catch(() => null),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders`, { headers }).catch(() => null),
         ]);
 
         const dataPkg = resPkg?.ok ? await resPkg.json() : { data: [] };

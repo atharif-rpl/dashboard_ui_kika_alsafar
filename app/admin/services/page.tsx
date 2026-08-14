@@ -19,7 +19,7 @@ export default function ServicesManagePage() {
   const fetchServices = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/services`);
       const result = await response.json();
       if (result.success) {
         setServices(result.data);

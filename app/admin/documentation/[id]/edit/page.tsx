@@ -34,7 +34,7 @@ export default function EditDocumentationPage() {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries/${id}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries/${id}`);
         const result = await response.json();
 
         if (result.success) {

@@ -35,7 +35,7 @@ export default function PackagesManagePage() {
   const fetchPackages = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages`);
       const result = await response.json();
       
       if (result.success) {

@@ -87,8 +87,8 @@ export default function PartnerModal({ isOpen, onClose, onSuccess, initialData }
 
       // Jika ada initialData, berarti proses Edit. Jika tidak, proses Create.
       const url = initialData 
-        ? `${process.env.NEXT_PUBLIC_API_URL}/partners/${initialData.id}` 
-        : `${process.env.NEXT_PUBLIC_API_URL}/partners`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/partners/${initialData.id}` 
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/partners`;
       
       const response = await fetch(url, {
         method: "POST", // Tetap POST, Laravel akan handle update-nya

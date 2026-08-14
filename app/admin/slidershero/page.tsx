@@ -19,7 +19,7 @@ export default function SlidersHeroPage() {
   const fetchSliders = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sliders`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders`);
       const result = await response.json();
       if (result.success) {
         setSliders(result.data);

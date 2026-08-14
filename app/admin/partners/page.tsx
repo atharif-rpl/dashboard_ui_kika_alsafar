@@ -22,7 +22,7 @@ export default function PartnersManagePage() {
   const fetchPartners = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners`);
       const result = await response.json();
       if (result.success) {
         setPartners(result.data);

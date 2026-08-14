@@ -76,7 +76,7 @@ export default function InputDocumentationPage() {
         .find(row => row.startsWith('admin_token='))
         ?.split('=')[1];
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries`, {
         method: "POST",
         body: dataToSend, 
         headers: {

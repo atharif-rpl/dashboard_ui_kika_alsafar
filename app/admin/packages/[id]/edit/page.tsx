@@ -39,7 +39,7 @@ export default function EditPackagePage() {
   useEffect(() => {
     const fetchPackage = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages/${id}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}`);
         const result = await response.json();
 
         if (result.success) {

@@ -19,7 +19,7 @@ export default function TestimonialsManagePage() {
   const fetchTestimonials = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/testimonials`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`);
       const result = await response.json();
       if (result.success) {
         setTestimonials(result.data);

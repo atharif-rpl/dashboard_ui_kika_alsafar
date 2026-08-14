@@ -78,7 +78,7 @@ export default function CreatePackagePage() {
         .find(row => row.startsWith('admin_token='))
         ?.split('=')[1];
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages`, {
         method: "POST",
         body: dataToSend,
         headers: { 

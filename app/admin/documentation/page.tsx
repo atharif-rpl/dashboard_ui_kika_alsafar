@@ -27,7 +27,7 @@ export default function DocumentationManagePage() {
   const fetchGalleries = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries`);
       const result = await response.json();
       
       if (result.success) {

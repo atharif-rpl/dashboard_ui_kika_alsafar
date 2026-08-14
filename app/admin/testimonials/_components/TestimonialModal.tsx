@@ -95,8 +95,8 @@ export default function TestimonialModal({ isOpen, onClose, onSuccess, initialDa
         ?.split('=')[1];
 
       const url = initialData 
-        ? `${process.env.NEXT_PUBLIC_API_URL}/testimonials/${initialData.id}` 
-        : `${process.env.NEXT_PUBLIC_API_URL}/testimonials`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/testimonials/${initialData.id}` 
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`;
 
       const response = await fetch(url, {
         method: "POST",

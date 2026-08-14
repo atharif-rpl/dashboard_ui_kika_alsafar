@@ -116,8 +116,8 @@ export default function HeroSliderModal({ isOpen, onClose, onSuccess, initialDat
         ?.split('=')[1];
 
       const url = initialData 
-        ? `${process.env.NEXT_PUBLIC_API_URL}/sliders/${initialData.id}` 
-        : `${process.env.NEXT_PUBLIC_API_URL}/sliders`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${initialData.id}` 
+        : `${process.env.NEXT_PUBLIC_API_URL}/api/sliders`;
 
       const response = await fetch(url, {
         method: "POST", 
