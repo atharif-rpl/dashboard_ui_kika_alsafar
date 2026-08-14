@@ -56,7 +56,7 @@ export default function PackagesManagePage() {
   const handleDelete = async (id: number) => {
     if (window.confirm("Yakin ingin menghapus paket ini secara permanen?")) {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}`, {
           method: "DELETE",
           headers: { "Accept": "application/json" }
         });

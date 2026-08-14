@@ -55,7 +55,7 @@ export default function PartnersManagePage() {
       const formData = new FormData();
       formData.append("status", newStatus);
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/${partner.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/${partner.id}`, {
         method: "POST", // Pakai POST ke endpoint update
         body: formData,
         headers: { 
@@ -86,7 +86,7 @@ export default function PartnersManagePage() {
           .find(row => row.startsWith('admin_token='))
           ?.split('=')[1];
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/partners/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/${id}`, {
           method: "DELETE",
           headers: { 
             "Accept": "application/json",

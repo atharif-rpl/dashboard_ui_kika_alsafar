@@ -39,7 +39,7 @@ export default function TestimonialsManagePage() {
     if (window.confirm("Yakin ingin menghapus ulasan ini?")) {
       try {
         const token = document.cookie.split('; ').find(row => row.startsWith('admin_token='))?.split('=')[1];
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/testimonials/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials/${id}`, {
           method: "DELETE",
           headers: { 
             "Accept": "application/json",

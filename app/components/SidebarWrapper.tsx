@@ -85,7 +85,7 @@ export default function SidebarWrapper({
 
       if (token) {
         // 2. Tembak API Logout ke Laravel untuk menghancurkan token di server
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
           method: "POST",
           headers: {
             "Accept": "application/json",

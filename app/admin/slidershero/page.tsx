@@ -44,7 +44,7 @@ export default function SlidersHeroPage() {
           .find(row => row.startsWith('admin_token='))
           ?.split('=')[1];
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sliders/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${id}`, {
           method: "DELETE",
           headers: { 
             "Accept": "application/json",
@@ -86,7 +86,7 @@ export default function SlidersHeroPage() {
       formData.append("description", slide.description);
       formData.append("isActive", newStatus ? "true" : "false");
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sliders/${slide.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/sliders/${slide.id}`, {
         method: "POST", // POST for update
         body: formData,
         headers: { 

@@ -44,7 +44,7 @@ export default function ServicesManagePage() {
           .find(row => row.startsWith('admin_token='))
           ?.split('=')[1];
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/services/${id}`, {
           method: "DELETE",
           headers: { 
             "Accept": "application/json",

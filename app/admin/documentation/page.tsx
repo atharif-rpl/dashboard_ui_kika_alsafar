@@ -54,7 +54,7 @@ export default function DocumentationManagePage() {
           .find(row => row.startsWith('admin_token='))
           ?.split('=')[1];
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries/${id}`, {
           method: "DELETE",
           headers: {
             "Accept": "application/json",
