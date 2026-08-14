@@ -103,7 +103,7 @@ export default function EditDocumentationPage() {
         ?.split('=')[1];
 
       // Kita pakai POST sesuai rute update yang kita set di Laravel
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/galleries/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/galleries/${id}`, {
         method: "POST", 
         body: dataToSend, 
         headers: { 

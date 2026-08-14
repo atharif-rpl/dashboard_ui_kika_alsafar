@@ -112,7 +112,7 @@ export default function EditPackagePage() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/packages/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}`, {
         method: "POST", // Kita pakai POST sesuai rute Laravel untuk Update dengan File
         body: dataToSend,
         headers: { "Accept": "application/json" }
