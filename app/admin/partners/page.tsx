@@ -13,7 +13,7 @@ const marcellus = Marcellus({
 export default function PartnersManagePage() {
   const [partners, setPartners] = useState<PartnerType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // State untuk Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<PartnerType | null>(null);
@@ -41,7 +41,7 @@ export default function PartnersManagePage() {
   // Handler: Toggle On/Off Status
   const handleToggleStatus = async (partner: PartnerType) => {
     const newStatus = partner.status === "active" ? "inactive" : "active";
-    
+
     // Optimistic UI Update biar kerasa cepat
     setPartners(prev => prev.map(p => p.id === partner.id ? { ...p, status: newStatus } : p));
 
@@ -54,17 +54,17 @@ export default function PartnersManagePage() {
 
       const formData = new FormData();
       formData.append("status", newStatus);
-      
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/${partner.id}`, {
         method: "POST", // Pakai POST ke endpoint update
         body: formData,
-        headers: { 
+        headers: {
           "Accept": "application/json",
           // 2. Selipin token ke Header
           "Authorization": `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         // Kalau gagal, revert statenya
         fetchPartners();
@@ -88,7 +88,7 @@ export default function PartnersManagePage() {
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/partners/${id}`, {
           method: "DELETE",
-          headers: { 
+          headers: {
             "Accept": "application/json",
             // 2. Selipin token ke Header
             "Authorization": `Bearer ${token}`
@@ -110,7 +110,7 @@ export default function PartnersManagePage() {
 
   return (
     <div className="space-y-6 animate-fade-in-up pb-10">
-      
+
       {/* Header Area */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -121,8 +121,8 @@ export default function PartnersManagePage() {
             Kelola logo maskapai dan fasilitas premium yang tampil di halaman depan.
           </p>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => { setEditingPartner(null); setIsModalOpen(true); }}
           className="bg-[#1B120B] hover:bg-[#5C0A2E] text-white text-sm font-bold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-[#1B120B]/10 flex items-center justify-center gap-2 shrink-0"
         >
@@ -133,28 +133,32 @@ export default function PartnersManagePage() {
 
       {isLoading ? (
         <div className="flex justify-center py-20">
-           <svg className="animate-spin h-8 w-8 text-[#C6952F]" fill="none" viewBox="0 0 24 24">
-             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-           </svg>
+          <svg className="animate-spin h-8 w-8 text-[#C6952F]" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
         </div>
       ) : partners.length === 0 ? (
         <div className="bg-white rounded-2xl p-10 text-center border border-gray-100">
-           <p className="text-gray-500">Belum ada logo mitra yang ditambahkan.</p>
+          <p className="text-gray-500">Belum ada logo mitra yang ditambahkan.</p>
         </div>
       ) : (
         /* Grid Layout untuk Daftar Logo */
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {partners.map((partner) => (
             <div key={partner.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all">
-              
+
               {/* Area Preview Logo */}
               <div className={`h-32 relative flex items-center justify-center p-4 border-b border-gray-50 transition-colors ${partner.status === 'active' ? 'bg-[#F6EFDF]/30' : 'bg-gray-100'}`}>
                 <div className={`relative w-full h-full transition-all duration-300 ${partner.status === 'active' ? 'grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100' : 'grayscale opacity-30'}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={partner.image_url} alt={partner.name} className="w-full h-full object-contain" />
+                  <img
+                    src={partner.image_url?.startsWith('http') ? partner.image_url : `${process.env.NEXT_PUBLIC_API_URL}${partner.image_url?.startsWith('/') ? '' : '/'}${partner.image_url}`}
+                    alt={partner.name}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                
+
                 {/* Overlay Action Buttons */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[1px]">
                   <button onClick={() => { setEditingPartner(partner); setIsModalOpen(true); }} className="w-8 h-8 rounded-full bg-white text-[#C6952F] flex items-center justify-center hover:scale-110 transition-transform" title="Edit">
@@ -171,9 +175,9 @@ export default function PartnersManagePage() {
                 <p className="text-sm font-bold text-[#1B120B] truncate pr-2" title={partner.name}>
                   {partner.name}
                 </p>
-                
+
                 {/* Toggle Switch */}
-                <button 
+                <button
                   onClick={() => handleToggleStatus(partner)}
                   title={partner.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
                   className={`w-10 h-5 rounded-full relative shrink-0 transition-colors ${partner.status === 'active' ? 'bg-[#5C0A2E]' : 'bg-gray-300'}`}
@@ -186,11 +190,11 @@ export default function PartnersManagePage() {
         </div>
       )}
 
-      <PartnerModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchPartners} 
-        initialData={editingPartner} 
+      <PartnerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchPartners}
+        initialData={editingPartner}
       />
 
     </div>
