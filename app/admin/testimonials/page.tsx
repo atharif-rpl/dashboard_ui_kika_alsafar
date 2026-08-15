@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Marcellus } from "next/font/google";
+import { Marcellus, Shojumaru } from "next/font/google";
 import TestimonialModal, { TestimonialType } from "./_components/TestimonialModal";
 
 const marcellus = Marcellus({
@@ -104,7 +104,7 @@ export default function TestimonialsManagePage() {
           {testimonials.map((item) => (
             <div key={item.id} className={`bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col relative group transition-all overflow-hidden ${!item.is_active && 'opacity-60'}`}>
               
-              {/* Tombol Aksi di Kanan Atas */}
+      
               <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button onClick={() => { setEditingData(item); setIsModalOpen(true); }} className="w-8 h-8 rounded-full bg-white shadow-md text-[#C6952F] flex items-center justify-center hover:scale-110">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -114,10 +114,10 @@ export default function TestimonialsManagePage() {
                 </button>
               </div>
 
-              {/* Setengah Atas: Area Foto Besar */}
+          
               <div className="h-48 w-full bg-gray-50 relative shrink-0">
                 {item.image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+               
                   <img 
                     src={item.image_url?.startsWith('http') ? item.image_url : `${process.env.NEXT_PUBLIC_API_URL}${item.image_url?.startsWith('/') ? '' : '/'}${item.image_url}`} 
                     alt={item.name} 
@@ -129,7 +129,7 @@ export default function TestimonialsManagePage() {
                   </div>
                 )}
                 
-                {/* Gradient halus biar nyambung ke konten bawah */}
+
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                   <div className="flex gap-1">
                     {renderStars(item.rating)}
@@ -137,7 +137,7 @@ export default function TestimonialsManagePage() {
                 </div>
               </div>
 
-              {/* Setengah Bawah: Area Teks dan Nama */}
+          
               <div className="p-5 flex flex-col flex-1 bg-white">
                 <p className="text-sm text-gray-600 italic flex-1 mb-4 line-clamp-4 leading-relaxed">&ldquo;{item.review}&rdquo;</p>
                 

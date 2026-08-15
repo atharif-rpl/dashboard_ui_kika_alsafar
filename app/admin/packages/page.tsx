@@ -56,9 +56,19 @@ export default function PackagesManagePage() {
   const handleDelete = async (id: number) => {
     if (window.confirm("Yakin ingin menghapus paket ini secara permanen?")) {
       try {
+        // 1. Ambil token dari cookie biar ga Unauthorized (401)
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('admin_token='))
+          ?.split('=')[1];
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}`, {
           method: "DELETE",
-          headers: { "Accept": "application/json" }
+          headers: { 
+            "Accept": "application/json",
+            // 2. Selipin token ke header
+            "Authorization": `Bearer ${token}`
+          }
         });
         
         const result = await response.json();
@@ -280,7 +290,6 @@ export default function PackagesManagePage() {
             <p className="text-xs font-medium text-gray-500">
               Menampilkan {filteredPackages.length} Paket
             </p>
-            {/* Pagination controls bisa di-develop lebih lanjut kalau datanya udah sangat banyak */}
           </div>
         )}
 

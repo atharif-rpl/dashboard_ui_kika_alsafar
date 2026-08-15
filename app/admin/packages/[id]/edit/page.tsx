@@ -112,10 +112,20 @@ export default function EditPackagePage() {
     }
 
     try {
+      // 1. Ambil token dari Cookies biar ga diusir satpam API
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('admin_token='))
+        ?.split('=')[1];
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}`, {
         method: "POST", // Kita pakai POST sesuai rute Laravel untuk Update dengan File
         body: dataToSend,
-        headers: { "Accept": "application/json" }
+        headers: { 
+          "Accept": "application/json",
+          // 2. Selipin tokennya di sini!
+          "Authorization": `Bearer ${token}` 
+        }
       });
 
       const result = await response.json();
