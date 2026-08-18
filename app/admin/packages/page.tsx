@@ -21,8 +21,7 @@ type PackageType = {
   totalSeats: number;
   status: "Publish" | "Draft";
   image_url: string | null;
-  // Tambahan kolom baru dari database
-  is_full: boolean | number; 
+  is_full: boolean | number; // Tambahan state sold out / full
 };
 
 export default function PackagesManagePage() {
@@ -53,6 +52,44 @@ export default function PackagesManagePage() {
   useEffect(() => {
     fetchPackages();
   }, []);
+
+  // Fungsi Toggle Status Full / Sold Out secara Instant
+  const handleToggleFull = async (id: number, currentStatus: boolean | number) => {
+    const newStatus = !currentStatus;
+    
+    // Optimistic UI update (ubah state lokal dulu biar cepet kerasa responsif)
+    setPackages(prev => prev.map(pkg => pkg.id === id ? { ...pkg, is_full: newStatus } : pkg));
+
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('admin_token='))
+        ?.split('=')[1];
+
+      // Tembak API update khusus status is_full (atau sesuaikan endpoint backend lu)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages/${id}/toggle-full`, {
+        method: "PATCH",
+        headers: { 
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_full: newStatus })
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        // Kalau gagal, kembalikan state semula
+        setPackages(prev => prev.map(pkg => pkg.id === id ? { ...pkg, is_full: currentStatus } : pkg));
+        alert("Gagal mengubah status kuota penuh.");
+      }
+    } catch (error) {
+      // Kalau error koneksi, kembalikan state semula
+      setPackages(prev => prev.map(pkg => pkg.id === id ? { ...pkg, is_full: currentStatus } : pkg));
+      console.error(error);
+      alert("Terjadi kesalahan jaringan.");
+    }
+  };
 
   // Fungsi Delete ke Database Laravel
   const handleDelete = async (id: number) => {
@@ -178,7 +215,8 @@ export default function PackagesManagePage() {
                 <th className="px-6 py-4 whitespace-nowrap">Keberangkatan</th>
                 <th className="px-6 py-4 whitespace-nowrap">Harga (Mulai)</th>
                 <th className="px-6 py-4 whitespace-nowrap">Kuota</th>
-                <th className="px-6 py-4 whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 whitespace-nowrap">Status Publikasi</th>
+                <th className="px-6 py-4 whitespace-nowrap text-center">Sold Out (Full)</th>
                 <th className="px-6 py-4 whitespace-nowrap text-center">Aksi</th>
               </tr>
             </thead>
@@ -186,7 +224,7 @@ export default function PackagesManagePage() {
             <tbody className="divide-y divide-gray-100 relative">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
+                  <td colSpan={7} className="px-6 py-16 text-center">
                     <svg className="animate-spin h-8 w-8 text-[#C6952F] mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -196,13 +234,12 @@ export default function PackagesManagePage() {
                 </tr>
               ) : filteredPackages.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
+                  <td colSpan={7} className="px-6 py-16 text-center">
                     <p className="text-gray-500">Tidak ada paket yang ditemukan.</p>
                   </td>
                 </tr>
               ) : (
                 filteredPackages.map((pkg) => {
-                  // LOGIKA BARU: Full bisa dari data database (is_full) ATAU hitungan kursi
                   const isManuallyFull = pkg.is_full === true || pkg.is_full === 1;
                   const isFull = isManuallyFull || (pkg.filledSeats >= pkg.totalSeats);
                   const percentFilled = (pkg.filledSeats / pkg.totalSeats) * 100;
@@ -213,16 +250,16 @@ export default function PackagesManagePage() {
                       {/* Info Paket */}
                       <td className="px-6 py-5 min-w-[280px]">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center text-gray-300 shrink-0 border border-gray-200 relative">
+                          <div className="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center text-gray-300 shrink-0 border border-gray-200">
                             {pkg.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
-                              <img src={pkg.image_url} alt={pkg.name} className={`w-full h-full object-cover ${isFull ? 'grayscale opacity-70' : ''}`} />
+                              <img src={pkg.image_url} alt={pkg.name} className="w-full h-full object-cover" />
                             ) : (
                               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             )}
                           </div>
                           <div>
-                            <p className={`text-sm font-bold mb-0.5 ${isFull ? 'text-gray-500 line-through' : 'text-[#1B120B]'}`}>{pkg.name}</p>
+                            <p className="text-sm font-bold text-[#1B120B] mb-0.5">{pkg.name}</p>
                             <p className="text-xs text-gray-500 font-medium">
                               {pkg.code} • {pkg.airline}
                             </p>
@@ -232,34 +269,29 @@ export default function PackagesManagePage() {
 
                       {/* Keberangkatan */}
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <p className={`text-sm font-semibold ${isFull ? 'text-gray-400' : 'text-[#1B120B]'}`}>{formatDate(pkg.departure)}</p>
+                        <p className="text-sm font-semibold text-[#1B120B]">{formatDate(pkg.departure)}</p>
                       </td>
 
                       {/* Harga */}
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <p className={`text-sm font-bold ${isFull ? 'text-gray-400' : 'text-[#C6952F]'}`}>{formatRupiah(pkg.price)}</p>
+                        <p className="text-sm font-bold text-[#C6952F]">{formatRupiah(pkg.price)}</p>
                       </td>
 
-                      {/* Kuota & Badge Sold Out */}
+                      {/* Kuota */}
                       <td className="px-6 py-5 min-w-[180px]">
                         <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-                          <span className={isFull ? 'text-red-500' : 'text-[#1B120B]'}>{pkg.filledSeats} Terisi</span>
+                          <span className="text-[#1B120B]">{pkg.filledSeats} Terisi</span>
                           <span className="text-gray-400">{pkg.totalSeats} Seat</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2">
+                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div 
                             className={`h-1.5 rounded-full transition-all duration-500 ${isFull ? 'bg-red-500' : 'bg-[#5C0A2E]'}`}
                             style={{ width: `${Math.min(percentFilled, 100)}%` }}
                           ></div>
                         </div>
-                        {isFull && (
-                          <span className="inline-block bg-red-100 text-red-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                            {isManuallyFull ? 'Ditutup Manual' : 'Sold Out'}
-                          </span>
-                        )}
                       </td>
 
-                      {/* Status */}
+                      {/* Status Publish */}
                       <td className="px-6 py-5 whitespace-nowrap">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold ${
                           pkg.status === 'Publish' 
@@ -268,6 +300,26 @@ export default function PackagesManagePage() {
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${pkg.status === 'Publish' ? 'bg-green-500' : 'bg-gray-400'}`}></span>
                           {pkg.status}
+                        </span>
+                      </td>
+
+                      {/* Toggle Sold Out (Full) Interaktif */}
+                      <td className="px-6 py-5 whitespace-nowrap text-center">
+                        <button
+                          onClick={() => handleToggleFull(pkg.id, isManuallyFull)}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                            isManuallyFull ? 'bg-red-600' : 'bg-gray-300'
+                          }`}
+                          title="Klik untuk ubah status penuh"
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              isManuallyFull ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                        <span className="block text-[10px] font-bold mt-1 text-gray-400">
+                          {isManuallyFull ? 'Full (Sold)' : 'Tersedia'}
                         </span>
                       </td>
 
