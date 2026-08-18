@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Marcellus, Shojumaru } from "next/font/google";
+import { Marcellus } from "next/font/google";
 import TestimonialModal, { TestimonialType } from "./_components/TestimonialModal";
 
 const marcellus = Marcellus({
@@ -21,8 +21,26 @@ export default function TestimonialsManagePage() {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/testimonials`);
       const result = await response.json();
-      if (result.success) {
-        setTestimonials(result.data);
+      
+      if (result.success && result.data) {
+        // FIX 1: Format URL gambar di sini agar selalu valid & absolute
+        const formattedData = result.data.map((item: any) => {
+          const rawImg = item.image_url || item.image || item.avatar || null;
+          let finalImg = null;
+
+          if (rawImg) {
+            finalImg = rawImg.startsWith('http') 
+              ? rawImg 
+              : `${process.env.NEXT_PUBLIC_API_URL}${rawImg.startsWith('/') ? '' : '/'}${rawImg}`;
+          }
+
+          return {
+            ...item,
+            image_url: finalImg
+          };
+        });
+
+        setTestimonials(formattedData);
       }
     } catch (error) {
       console.error("Gagal mengambil data:", error);
@@ -102,9 +120,8 @@ export default function TestimonialsManagePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {testimonials.map((item) => (
-            <div key={item.id} className={`bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col relative group transition-all overflow-hidden ${!item.is_active && 'opacity-60'}`}>
+            <div key={item.id} className={`bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col relative group transition-all overflow-hidden ${item.is_active === false ? 'opacity-60' : ''}`}>
               
-      
               <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <button onClick={() => { setEditingData(item); setIsModalOpen(true); }} className="w-8 h-8 rounded-full bg-white shadow-md text-[#C6952F] flex items-center justify-center hover:scale-110">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -114,21 +131,24 @@ export default function TestimonialsManagePage() {
                 </button>
               </div>
 
-          
               <div className="h-48 w-full bg-gray-50 relative shrink-0">
+                {/* FIX 2: Cek apakah image_url beneran ada dan valid */}
                 {item.image_url ? (
-               
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img 
-                    src={item.image_url?.startsWith('http') ? item.image_url : `${process.env.NEXT_PUBLIC_API_URL}${item.image_url?.startsWith('/') ? '' : '/'}${item.image_url}`} 
+                    src={item.image_url} 
                     alt={item.name} 
                     className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      // Fallback jika URL gambarnya 404/rusak di server
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">
                     <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                   </div>
                 )}
-                
 
                 <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                   <div className="flex gap-1">
@@ -137,7 +157,6 @@ export default function TestimonialsManagePage() {
                 </div>
               </div>
 
-          
               <div className="p-5 flex flex-col flex-1 bg-white">
                 <p className="text-sm text-gray-600 italic flex-1 mb-4 line-clamp-4 leading-relaxed">&ldquo;{item.review}&rdquo;</p>
                 
