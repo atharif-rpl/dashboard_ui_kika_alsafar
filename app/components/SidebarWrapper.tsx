@@ -38,6 +38,13 @@ export default function SidebarWrapper({
       ),
     },
     {
+      name: "Manajemen FAQ",
+      href: "/admin/faqs",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      ),
+    },
+    {
       name: "Dokumentasi",
       href: "/admin/documentation",
       icon: (
@@ -45,26 +52,26 @@ export default function SidebarWrapper({
       ),
     },
     {
-        name: "Sliders Hero",
-        href: "/admin/slidershero",
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-        ),
-      },
-      {
-        name: "Testimonials",
-        href: "/admin/testimonials",
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-        ),
-      },
+      name: "Sliders Hero",
+      href: "/admin/slidershero",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+      ),
+    },
     {
-        name: "Services",
-        href: "/admin/services",
-        icon: (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-        ),
-      },
+      name: "Testimonials",
+      href: "/admin/testimonials",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+      ),
+    },
+    {
+      name: "Services",
+      href: "/admin/services",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+      ),
+    },
     {
       name: "Mitra Perjalanan",
       href: "/admin/partners",
@@ -77,14 +84,12 @@ export default function SidebarWrapper({
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // 1. Ambil token dari Cookies
       const token = document.cookie
         .split('; ')
         .find(row => row.startsWith('admin_token='))
         ?.split('=')[1];
 
       if (token) {
-        // 2. Tembak API Logout ke Laravel untuk menghancurkan token di server
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
           method: "POST",
           headers: {
@@ -96,13 +101,8 @@ export default function SidebarWrapper({
     } catch (error) {
       console.error("Gagal logout dari server:", error);
     } finally {
-      // 3. Hapus Cookie secara paksa dengan nge-set tanggal expired ke masa lalu
       document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      
-      // 4. Bersihkan data user dari LocalStorage
       localStorage.removeItem("admin_user");
-      
-      // 5. Arahkan balik ke halaman login (Middleware akan nahan kalau dicoba di-back)
       router.push("/login");
     }
   };
