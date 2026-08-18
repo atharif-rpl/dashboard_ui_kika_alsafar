@@ -21,6 +21,8 @@ type PackageType = {
   totalSeats: number;
   status: "Publish" | "Draft";
   image_url: string | null;
+  // Tambahan kolom baru dari database
+  is_full: boolean | number; 
 };
 
 export default function PackagesManagePage() {
@@ -56,7 +58,6 @@ export default function PackagesManagePage() {
   const handleDelete = async (id: number) => {
     if (window.confirm("Yakin ingin menghapus paket ini secara permanen?")) {
       try {
-        // 1. Ambil token dari cookie biar ga Unauthorized (401)
         const token = document.cookie
           .split('; ')
           .find(row => row.startsWith('admin_token='))
@@ -66,7 +67,6 @@ export default function PackagesManagePage() {
           method: "DELETE",
           headers: { 
             "Accept": "application/json",
-            // 2. Selipin token ke header
             "Authorization": `Bearer ${token}`
           }
         });
@@ -96,7 +96,7 @@ export default function PackagesManagePage() {
     }).format(number);
   };
 
-  // Format Tanggal (Contoh: 15 Oktober 2026)
+  // Format Tanggal
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "numeric",
@@ -202,7 +202,9 @@ export default function PackagesManagePage() {
                 </tr>
               ) : (
                 filteredPackages.map((pkg) => {
-                  const isFull = pkg.filledSeats >= pkg.totalSeats;
+                  // LOGIKA BARU: Full bisa dari data database (is_full) ATAU hitungan kursi
+                  const isManuallyFull = pkg.is_full === true || pkg.is_full === 1;
+                  const isFull = isManuallyFull || (pkg.filledSeats >= pkg.totalSeats);
                   const percentFilled = (pkg.filledSeats / pkg.totalSeats) * 100;
 
                   return (
@@ -211,16 +213,16 @@ export default function PackagesManagePage() {
                       {/* Info Paket */}
                       <td className="px-6 py-5 min-w-[280px]">
                         <div className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center text-gray-300 shrink-0 border border-gray-200">
+                          <div className="w-14 h-14 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center text-gray-300 shrink-0 border border-gray-200 relative">
                             {pkg.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
-                              <img src={pkg.image_url} alt={pkg.name} className="w-full h-full object-cover" />
+                              <img src={pkg.image_url} alt={pkg.name} className={`w-full h-full object-cover ${isFull ? 'grayscale opacity-70' : ''}`} />
                             ) : (
                               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-[#1B120B] mb-0.5">{pkg.name}</p>
+                            <p className={`text-sm font-bold mb-0.5 ${isFull ? 'text-gray-500 line-through' : 'text-[#1B120B]'}`}>{pkg.name}</p>
                             <p className="text-xs text-gray-500 font-medium">
                               {pkg.code} • {pkg.airline}
                             </p>
@@ -230,26 +232,31 @@ export default function PackagesManagePage() {
 
                       {/* Keberangkatan */}
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <p className="text-sm font-semibold text-[#1B120B]">{formatDate(pkg.departure)}</p>
+                        <p className={`text-sm font-semibold ${isFull ? 'text-gray-400' : 'text-[#1B120B]'}`}>{formatDate(pkg.departure)}</p>
                       </td>
 
                       {/* Harga */}
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <p className="text-sm font-bold text-[#C6952F]">{formatRupiah(pkg.price)}</p>
+                        <p className={`text-sm font-bold ${isFull ? 'text-gray-400' : 'text-[#C6952F]'}`}>{formatRupiah(pkg.price)}</p>
                       </td>
 
-                      {/* Kuota */}
+                      {/* Kuota & Badge Sold Out */}
                       <td className="px-6 py-5 min-w-[180px]">
                         <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-                          <span className="text-[#1B120B]">{pkg.filledSeats} Terisi</span>
+                          <span className={isFull ? 'text-red-500' : 'text-[#1B120B]'}>{pkg.filledSeats} Terisi</span>
                           <span className="text-gray-400">{pkg.totalSeats} Seat</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2">
                           <div 
                             className={`h-1.5 rounded-full transition-all duration-500 ${isFull ? 'bg-red-500' : 'bg-[#5C0A2E]'}`}
                             style={{ width: `${Math.min(percentFilled, 100)}%` }}
                           ></div>
                         </div>
+                        {isFull && (
+                          <span className="inline-block bg-red-100 text-red-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                            {isManuallyFull ? 'Ditutup Manual' : 'Sold Out'}
+                          </span>
+                        )}
                       </td>
 
                       {/* Status */}
